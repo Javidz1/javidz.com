@@ -11,14 +11,11 @@ This repository contains a self-contained static site export. It can be served b
 ```text
 .
 ├── index.html
-├── support.js
-└── cdn-cgi/
-    └── scripts/5c5dd728/cloudflare-static/email-decode.min.js
+└── support.js
 ```
 
 - `index.html` - main website entry point.
 - `support.js` - runtime script required by the exported page.
-- `cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js` - local copy of the email decoding script referenced by the page.
 
 ## Local Development
 
@@ -43,7 +40,6 @@ Required files and folders:
 ```text
 index.html
 support.js
-cdn-cgi/
 ```
 
 The page loads Google Fonts and React/Babel from public CDNs through the exported runtime, so the deployed site should allow outbound access to those CDN resources.
