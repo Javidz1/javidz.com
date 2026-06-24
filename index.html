@@ -33,10 +33,54 @@
   @keyframes blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
   @keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
   @keyframes scanline { 0% { transform: translateY(-10%); } 100% { transform: translateY(900%); } }
+
+  /* ===== NAV ===== */
+  .nav-toggle { display: none; }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    font-size: 14px;
+    color: #9aa1b2;
+    font-weight: 500;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  @media (max-width: 880px) {
+    .nav-toggle {
+      display: inline-grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      color: #e8ebf4;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .nav-links {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+      padding: 12px 28px 20px;
+      background: rgba(9,12,19,0.96);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 24px 40px -24px rgba(0,0,0,0.8);
+    }
+    .nav-links > a { padding: 12px 6px; border-radius: 8px; }
+    .nav-links[data-open="false"] { display: none; }
+  }
 </style>
 </helmet>
 
-<div ref="{{ setRoot }}" style="--accent:#6366f1; --accent2:#8b5cf6; --cyan:#34d8ee; --ok:#34d399; --text:#e8ebf4; --muted:#8c93a6; --faint:#6b7383; --line:rgba(255,255,255,0.09); font-family:'Inter',system-ui,sans-serif; background:#080b12; color:#e8ebf4; overflow-x:hidden;">
+<div ref="{{ setRoot }}" style="--accent:#6366f1; --accent2:#8b5cf6; --cyan:#34d8ee; --ok:#34d399; --text:#e8ebf4; --muted:#8c93a6; --faint:#6b7383; --line:rgba(255,255,255,0.09); font-family:'Inter',system-ui,sans-serif; background:#080b12; color:#e8ebf4; overflow-x:clip;">
 
   <!-- fixed global grid + glow -->
   <div style="position:fixed; inset:0; z-index:0; pointer-events:none; background-image:linear-gradient(rgba(139,92,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,0.04) 1px,transparent 1px); background-size:52px 52px;"></div>
@@ -49,7 +93,8 @@
         <span style="display:inline-grid; place-items:center; width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-size:14px; box-shadow:0 8px 20px -6px var(--accent);">JA</span>
         javid<span style="color:var(--accent);">.</span>
       </a>
-      <div style="display:flex; align-items:center; gap:26px; font-size:14px; color:#9aa1b2; font-weight:500; flex-wrap:wrap; justify-content:flex-end;">
+      <button class="nav-toggle" onClick="{{ toggleMenu }}" aria-label="Toggle navigation menu" aria-expanded="{{ menuOpen }}">{{ menuIcon }}</button>
+      <div class="nav-links" data-open="{{ menuOpen }}" onClick="{{ closeMenu }}">
         <a href="#about" style="color:inherit; text-decoration:none;">About</a>
         <a href="#internship" style="color:var(--accent); text-decoration:none;">Internship</a>
         <a href="#journey" style="color:inherit; text-decoration:none;">Journey</a>
@@ -331,7 +376,7 @@
   &quot;scanlines&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot; }
 }">
 class Component extends DCLogic {
-  state = { step: 0, char: 0, pause: 0, clock: "--:--:--" };
+  state = { step: 0, char: 0, pause: 0, clock: "--:--:--", menuOpen: false };
 
   script = [
     { text: "$ ./profile.sh", color: "#8fd0fb" },
@@ -430,6 +475,10 @@ class Component extends DCLogic {
     }
     return {
       setRoot: (el) => { this.rootEl = el; },
+      menuOpen: this.state.menuOpen ? "true" : "false",
+      menuIcon: this.state.menuOpen ? "✕" : "☰",
+      toggleMenu: (e) => { e.stopPropagation(); this.setState({ menuOpen: !this.state.menuOpen }); },
+      closeMenu: () => { if (this.state.menuOpen) this.setState({ menuOpen: false }); },
       onGlow: (e) => {
         const r = e.currentTarget.getBoundingClientRect();
         e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
